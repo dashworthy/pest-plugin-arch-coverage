@@ -18,53 +18,64 @@ nothing to publish and no service provider.
 
 ## Usage
 
-Given an action at `app/Domains/Billing/Actions/CreateInvoice.php`:
+The verb takes a whole **layer** — every class beneath a source root — and
+requires each to have a test at the mirrored position. It does not single out a
+kind of class: an action, a model, and a data object under the root are all
+subject to it equally. There is no "Actions directory" to point at; you map the
+root, and every class below it is covered.
+
+`PublishPlanVersion` lives at
+`app/Domains/Platform/Billing/Actions/PublishPlanVersion.php`:
 
 ```php
-namespace App\Domains\Billing\Actions;
+namespace App\Domains\Platform\Billing\Actions;
 
-use App\Domains\Billing\Models\Invoice;
+use App\Domains\Platform\Billing\Data\PublishPlanVersionData;
+use App\Domains\Platform\Billing\Models\PlanVersion;
 
-final class CreateInvoice
+final class PublishPlanVersion
 {
-    public function handle(int $teamId, int $amountCents): Invoice
+    public function handle(PublishPlanVersionData $data): PlanVersion
     {
-        return Invoice::create([
-            'team_id' => $teamId,
-            'amount_cents' => $amountCents,
-            'status' => 'pending',
-        ]);
+        // ...
     }
 }
 ```
 
-this expectation demands a test at
-`tests/Unit/Domains/Billing/Actions/CreateInvoiceTest.php`, and fails naming that
-exact path until it exists:
+Mapping the domain root at a mirrored test root requires a test for it — and for
+every other class under `app/Domains` — at the same relative path:
 
 ```php
-arch('every action has a unit test')
+arch('every domain class has a mirrored test')
     ->expect('App\Domains')
     ->toHaveTests([
         app_path('Domains') => base_path('tests/Unit/Domains'),
     ]);
 ```
 
-The map is an argument, not configuration, so two conventions can disagree about
-where a test belongs:
+The failure names the one path that satisfies it:
+`tests/Unit/Domains/Platform/Billing/Actions/PublishPlanVersionTest.php`.
+
+### Sending one layer to a different suite
+
+The map is an argument, not a config file, and the **longest matching source
+root wins**. That lets one layer inside the tree mirror somewhere else without
+restating its parent — here, controllers run through the framework, so they
+belong in the feature suite while everything else stays in the unit suite:
 
 ```php
-arch('controllers have feature tests')
-    ->expect('App\Http\Controllers')
-    ->toHaveTests([app_path('Http/Controllers') => base_path('tests/Feature/Http')]);
-
-arch('actions have unit tests')
+arch('every domain class has a mirrored test')
     ->expect('App\Domains')
-    ->toHaveTests([app_path('Domains') => base_path('tests/Unit/Domains')]);
+    ->toHaveTests([
+        app_path('Domains') => base_path('tests/Unit/Domains'),
+        app_path('Domains/Platform/Billing/Controllers')
+            => base_path('tests/Feature/Domains/Platform/Billing/Controllers'),
+    ]);
 ```
 
-Neither satisfies the other. A single global config listing both roots could not
-express that.
+A controller matches both roots; the longer one wins, so its test is required
+under `tests/Feature/Domains/...` and not in the unit suite. A single global
+config listing roots could not express "this subtree, but not its parent".
 
 ## Signature
 
