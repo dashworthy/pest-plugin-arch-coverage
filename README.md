@@ -24,26 +24,11 @@ kind of class: an action, a model, and a data object under the root are all
 subject to it equally. There is no "Actions directory" to point at; you map the
 root, and every class below it is covered.
 
-`PublishPlanVersion` lives at
-`app/Domains/Platform/Billing/Actions/PublishPlanVersion.php`:
-
-```php
-namespace App\Domains\Platform\Billing\Actions;
-
-use App\Domains\Platform\Billing\Data\PublishPlanVersionData;
-use App\Domains\Platform\Billing\Models\PlanVersion;
-
-final class PublishPlanVersion
-{
-    public function handle(PublishPlanVersionData $data): PlanVersion
-    {
-        // ...
-    }
-}
-```
-
-Mapping the domain root at a mirrored test root requires a test for it — and for
-every other class under `app/Domains` — at the same relative path:
+Point it at a namespace, and the map mirrors each matched class into a test root
+at the same relative path. A class at
+`App\Domains\Platform\Billing\Actions\PublishPlanVersion` requires a test at
+`tests/Unit/Domains/Platform/Billing/Actions/PublishPlanVersionTest.php`, and the
+failure names that exact path until it exists:
 
 ```php
 arch('every domain class has a mirrored test')
@@ -52,9 +37,6 @@ arch('every domain class has a mirrored test')
         app_path('Domains') => base_path('tests/Unit/Domains'),
     ]);
 ```
-
-The failure names the one path that satisfies it:
-`tests/Unit/Domains/Platform/Billing/Actions/PublishPlanVersionTest.php`.
 
 ### Sending one layer to a different suite
 
