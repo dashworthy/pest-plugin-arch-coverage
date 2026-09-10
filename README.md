@@ -18,6 +18,30 @@ nothing to publish and no service provider.
 
 ## Usage
 
+Given an action at `app/Domains/Billing/Actions/CreateInvoice.php`:
+
+```php
+namespace App\Domains\Billing\Actions;
+
+use App\Domains\Billing\Models\Invoice;
+
+final class CreateInvoice
+{
+    public function handle(int $teamId, int $amountCents): Invoice
+    {
+        return Invoice::create([
+            'team_id' => $teamId,
+            'amount_cents' => $amountCents,
+            'status' => 'pending',
+        ]);
+    }
+}
+```
+
+this expectation demands a test at
+`tests/Unit/Domains/Billing/Actions/CreateInvoiceTest.php`, and fails naming that
+exact path until it exists:
+
 ```php
 arch('every action has a unit test')
     ->expect('App\Domains')
