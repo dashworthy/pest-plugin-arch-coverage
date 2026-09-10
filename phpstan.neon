@@ -1,0 +1,14 @@
+parameters:
+    level: max
+    paths:
+        - src
+
+    # A Pest registration file: a closure at file scope whose $this the framework
+    # rebinds to the Expectation at runtime, and whose parameter docblock is not
+    # read in argument position. Neither is expressible, so the file is kept to a
+    # bare delegation and every decision lives in CoverageInspector, which is
+    # analysed.
+    excludePaths:
+        - src/Autoload.php
+
+    reportUnmatchedIgnoredErrors: true

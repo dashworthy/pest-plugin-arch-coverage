@@ -1,0 +1,58 @@
+{
+    "name": "dashworthy/pest-plugin-arch-coverage",
+    "description": "Test-coverage architecture expectations for Pest.",
+    "keywords": ["php", "pest", "testing", "plugin", "architecture", "coverage", "dashworthy"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrew Leach",
+            "email": "andrew@leachcreative.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin": "^4.0",
+        "pestphp/pest-plugin-arch": "^4.0"
+    },
+    "require-dev": {
+        "pestphp/pest-dev-tools": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dashworthy\\PestPluginArchCoverage\\": "src/"
+        },
+        "files": [
+            "src/Autoload.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dashworthy\\PestPluginArchCoverage\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "refacto": "rector",
+        "lint": "pint",
+        "test:refacto": "rector --dry-run",
+        "test:lint": "pint --test",
+        "test:types": "phpstan analyse --ansi",
+        "test:unit": "pest --colors=always",
+        "test": [
+            "@test:refacto",
+            "@test:lint",
+            "@test:types",
+            "@test:unit"
+        ]
+    }
+}
